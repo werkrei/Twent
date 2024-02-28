@@ -15,17 +15,17 @@ const rwClient = userClient.readWrite;
 module.exports = {
 	name: Events.GuildScheduledEventUpdate,
 	async execute(createdevent) {
-    // Find the point in the description where we need to cut from
+		// Find the point in the description where we need to cut from
 		const descriptionIndex = createdevent.description.search(':`');
-    // Cut the description
+		// Cut the description
 		const description = createdevent.description.substring(descriptionIndex + 1, descriptionIndex.length);
-    // Set the offset for the Twitter character limit, the tweet we send has 98 static characters
+		// Set the offset for the Twitter character limit, the tweet we send has 98 static characters
 		const characterLimitOffset = 98 + createdevent.name.length;
-    // Add the offset to the limit
+		// Add the offset to the limit
 		const characterLimit = 280 - characterLimitOffset;
-    // This is a surprise tool that will help us later
+		// This is a surprise tool that will help us later
 		let truncDesc = '';
-    // If the length of the string is more than the character limit, cut it and add an ellipsis
+		// If the length of the string is more than the character limit, cut it and add an ellipsis
 		if (description.length >= characterLimit) {
 			truncDesc = description.substring(1, characterLimit - 20) + '...';
 		}
@@ -47,14 +47,14 @@ module.exports = {
 				]);
 				// Send tweet
 				rwClient.v2.tweet({
-					text: `MondoCat Event starting: ${createdevent.name} \n You can join this event on our Discord server https://discord.gg/mondocat`,
+					text: `MondoCat Event starting: ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`,
 					media: { media_ids: mediaId },
 				});
 			}
 			else {
 				// If event doesn't have image set, just send name
 				rwClient.v2.tweet({
-					text: `MondoCat Event starting ${createdevent.name} \n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`,
+					text: `MondoCat Event starting ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`,
 				});
 			}
 		}
