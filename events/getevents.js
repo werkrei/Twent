@@ -15,23 +15,30 @@ const rwClient = userClient.readWrite;
 module.exports = {
 	name: Events.GuildScheduledEventUpdate,
 	async execute(createdevent) {
+		// Put the description in a variable, if the description is too long, it will get truncated at line 34
+		let truncDesc = createdevent.description;
+		let tweet = `MondoCat Event starting: ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`;
+		// Configure the tweet in a const so we can calculate the characters and not have to change the tweet
+		// Use tweetNoVariables to calculate character limit, tweet to send.
+		const tweetNoVariables = 'MondoCat Event starting: You can join this event on our Discord server https://discord.gg/mondocat';
 		// Find the point in the description where we need to cut from
 		const descriptionIndex = createdevent.description.search(':`');
 		// Cut the description
 		const description = createdevent.description.substring(descriptionIndex + 1, descriptionIndex.length);
 		// Set the offset for the Twitter character limit, the tweet we send has 98 static characters
-		const characterLimitOffset = 98 + createdevent.name.length;
+		const characterLimitOffset = tweetNoVariables.length + createdevent.name.length;
 		// Add the offset to the limit
 		const characterLimit = 280 - characterLimitOffset;
-		// This is a surprise tool that will help us later
-		let truncDesc = '';
 		// If the length of the string is more than the character limit, cut it and add an ellipsis
 		if (description.length >= characterLimit) {
 			truncDesc = description.substring(1, characterLimit - 20) + '...';
+			// We need to set the variables in the string, and this is the only way I could come up with💀
+			tweet = `MondoCat Event starting: ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`;
 		}
 		if (createdevent.status == '1') {
 			console.log('Event Starting:');
 			// Check if event has image attached
+			console.log(tweet);
 			if (createdevent.image != null) {
 				// Download the event image into the buffer
 				const downStream = await axios({
@@ -47,14 +54,14 @@ module.exports = {
 				]);
 				// Send tweet
 				rwClient.v2.tweet({
-					text: `MondoCat Event starting: ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`,
+					text: `${tweet}`,
 					media: { media_ids: mediaId },
 				});
 			}
 			else {
-				// If event doesn't have image set, just send name
+				// If event doesn't have image set, just send the name and description
 				rwClient.v2.tweet({
-					text: `MondoCat Event starting ${createdevent.name}\n ${truncDesc}\nYou can join this event on our Discord server https://discord.gg/mondocat`,
+					text: `${tweet}`,
 				});
 			}
 		}
