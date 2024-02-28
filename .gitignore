@@ -1,0 +1,4 @@
+config.json
+*.txt
+.eslintrc.json
+/node_modules
