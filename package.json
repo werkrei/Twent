@@ -7,12 +7,12 @@
   "name": "twent",
   "version": "1.0.0",
   "description": "Twitter bot for discord events",
-  "main": "startbot.js",
+  "main": "index.js",
   "devDependencies": {
     "eslint": "^8.57.0"
   },
   "scripts": {
-    "test": "test"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC"
